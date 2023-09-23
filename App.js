@@ -2,7 +2,7 @@ import React from "react";
 import { StatusBar } from "expo-status-bar";
 import { AppRegistry } from "react-native";
 import { PaperProvider } from "react-native-paper";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, SafeAreaView } from "react-native";
 import {
 	NavigationContainer,
 	DefaultTheme,
@@ -10,7 +10,7 @@ import {
 } from "@react-navigation/native";
 import BottomNav from "./components/BottomNav";
 
-// theme
+// theme imports
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
 import { useColorScheme } from "react-native";
 import {
@@ -18,6 +18,15 @@ import {
 	MD3LightTheme,
 	adaptNavigationTheme,
 } from "react-native-paper";
+
+// paper components
+import { BottomNavigation, Text } from 'react-native-paper';
+
+// temp components
+const MusicRoute = () => <SafeAreaView><Text>Music</Text></SafeAreaView>;
+const AlbumsRoute = () => <Text>Albums</Text>;
+const RecentsRoute = () => <Text>Recents</Text>;
+const NotificationsRoute = () => <Text>Notifications</Text>;
 
 export default function App() {
 	// react native paper theme
@@ -37,13 +46,34 @@ export default function App() {
 	});
   const navigationTheme = colorScheme === 'dark' ? DarkTheme : LightTheme;
 
+  // temp states for bottom nav
+  const [index, setIndex] = React.useState(0);
+
+  // temp routes 
+  const [routes] = React.useState([
+    { key: 'music', title: 'Favorites', focusedIcon: 'heart', unfocusedIcon: 'heart-outline'},
+    { key: 'albums', title: 'Albums', focusedIcon: 'album' },
+    { key: 'recents', title: 'Recents', focusedIcon: 'history' },
+    { key: 'notifications', title: 'Notifications', focusedIcon: 'bell', unfocusedIcon: 'bell-outline' },
+  ]);
+  const renderScene = BottomNavigation.SceneMap({
+    music: MusicRoute,
+    albums: AlbumsRoute,
+    recents: RecentsRoute,
+    notifications: NotificationsRoute,
+  });
+
 	return (
 		<PaperProvider theme={paperTheme}>
 			<NavigationContainer
 				theme={navigationTheme}
 			>
-				<StatusBar style="auto" />
-				<BottomNav />
+				<StatusBar/>
+				<BottomNavigation
+          navigationState={{ index, routes }}
+          onIndexChange={setIndex}
+          renderScene={renderScene}
+        />
 			</NavigationContainer>
 		</PaperProvider>
 	);
