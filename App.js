@@ -1,14 +1,8 @@
 import React from "react";
-import { StatusBar } from "expo-status-bar";
 import { AppRegistry } from "react-native";
 import { PaperProvider } from "react-native-paper";
-import { StyleSheet, SafeAreaView } from "react-native";
-import {
-	NavigationContainer,
-	DefaultTheme,
-	DarkTheme,
-} from "@react-navigation/native";
-import BottomNav from "./components/BottomNav";
+import { StatusBar } from "expo-status-bar";
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 
 // theme imports
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
@@ -20,15 +14,14 @@ import {
 } from "react-native-paper";
 
 // paper components
-import { BottomNavigation, Text } from 'react-native-paper';
+import { BottomNavigation } from "react-native-paper";
 
-// temp components
-const MusicRoute = () => <SafeAreaView><Text>Music</Text></SafeAreaView>;
-const AlbumsRoute = () => <Text>Albums</Text>;
-const RecentsRoute = () => <Text>Recents</Text>;
-const NotificationsRoute = () => <Text>Notifications</Text>;
+// routes
+import Home from "./routes/Home";
+import Graph from "./routes/Graph";
+import Settings from "./routes/Settings";
 
-export default function App() {
+export default function Main() {
 	// react native paper theme
 	const colorScheme = useColorScheme();
 	const { theme } = useMaterial3Theme();
@@ -44,48 +37,50 @@ export default function App() {
 		reactNavigationDark: DarkTheme,
 		materialDark: MD3DarkTheme,
 	});
-  const navigationTheme = colorScheme === 'dark' ? DarkTheme : LightTheme;
+	const navigationTheme = colorScheme === "dark" ? DarkTheme : LightTheme;
 
-  // temp states for bottom nav
-  const [index, setIndex] = React.useState(0);
+	// temp states for bottom nav
+	const [index, setIndex] = React.useState(0);
 
-  // temp routes 
-  const [routes] = React.useState([
-    { key: 'music', title: 'Favorites', focusedIcon: 'heart', unfocusedIcon: 'heart-outline'},
-    { key: 'albums', title: 'Albums', focusedIcon: 'album' },
-    { key: 'recents', title: 'Recents', focusedIcon: 'history' },
-    { key: 'notifications', title: 'Notifications', focusedIcon: 'bell', unfocusedIcon: 'bell-outline' },
-  ]);
-  const renderScene = BottomNavigation.SceneMap({
-    music: MusicRoute,
-    albums: AlbumsRoute,
-    recents: RecentsRoute,
-    notifications: NotificationsRoute,
-  });
+	// temp routes
+	const [routes] = React.useState([
+		{
+			key: "home",
+			title: "Home",
+			focusedIcon: "home",
+			unfocusedIcon: "home-outline",
+		},
+		{
+			key: "graph",
+			title: "Graph",
+			focusedIcon: "chart-areaspline",
+		},
+		{
+			key: "settings",
+			title: "Settings",
+			focusedIcon: "cog",
+			unfocusedIcon: "cog-outline",
+		},
+	]);
+
+	const renderScene = BottomNavigation.SceneMap({
+		home: Home,
+		graph: Graph,
+		settings: Settings,
+	});
 
 	return (
 		<PaperProvider theme={paperTheme}>
-			<NavigationContainer
-				theme={navigationTheme}
-			>
-				<StatusBar/>
+			<NavigationContainer theme={navigationTheme}>
+				<StatusBar />
 				<BottomNavigation
-          navigationState={{ index, routes }}
-          onIndexChange={setIndex}
-          renderScene={renderScene}
-        />
+					navigationState={{ index, routes }}
+					onIndexChange={setIndex}
+					renderScene={renderScene}
+				/>
 			</NavigationContainer>
 		</PaperProvider>
 	);
 }
 
 AppRegistry.registerComponent("eiot", () => Main);
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: "#fff",
-		alignItems: "center",
-		justifyContent: "center",
-	},
-});
