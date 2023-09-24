@@ -27,39 +27,39 @@ The project is built using React Native (Expo) and Firebase for the backend.
 ## Run Locally
 1. Install NPM packages
 ```bash
-	npm install
+npm install
 ```
 2. Install Android Platform Tools 
 3. Connect your Android device to your computer (Install Android Studio with an emulator if you don't have an Android device) 
 4. Get your device id using
 ```bash
-	adb devices
+adb devices
 ```
 5. Start reverse tunneling (-s argument is optional if multiple devices are connected to the computer)
 ```bash
-	adb -s <device_id> reverse tcp:8081 tcp:8081
+adb -s <device_id> reverse tcp:8081 tcp:8081
 ```
 6. Build and run the app
 ```bash
-	npx expo run:android -d <device_id>
+npx expo run:android -d <device_id>
 ```
 
 ### Other way to run the app
 ```
-	npx expo start
+npx expo start
 ```
 > Note: If the app shows failed to connect then use the following flag
 ```
-	npx expo start --tunnel
+npx expo start --tunnel
 ```
 
 ## Misc
 - Clearing build cache
 ```bash
-	npx expo start --clear
+npx expo start --clear
 ```
 
 > If your gradle build fails due to your system having different jdk versions then use the following command
 ```bash
-	export JAVA_HOME=/path/to/jdk
+export JAVA_HOME=/path/to/jdk
 ```
