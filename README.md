@@ -11,7 +11,6 @@ The project is built using React Native (Expo) and Firebase for the backend.
 
 ## Screenshots
 <div style="display:flex; gap:1em;">
-	<img src="./assets/offline_ss_app.jpg" alt="light offline ss" style="width:200px;"/>
 	<img src="./assets/250_ss_app.jpg" alt="light 200 ss" style="width:200px;"/>
 	<img src="./assets/300_ss_app.jpg" alt="light 300 ss" style="width:200px;"/>
 	<img src="./assets/graph_ss_app.jpg" alt="light graph ss" style="width:200px;"/>
@@ -19,7 +18,6 @@ The project is built using React Native (Expo) and Firebase for the backend.
 </div>
 
 <div style="display:flex; gap:1em; margin-top:1em;">
-	<img src="./assets/dark_offline_ss_app.jpg" alt="dark offline ss" style="width:200px;"/>
 	<img src="./assets/dark_250_ss_app.jpg" alt="dark 200 ss" style="width:200px;"/>
 	<img src="./assets/dark_300_ss_app.jpg" alt="dark 300 ss" style="width:200px;"/>
 	<img src="./assets/dark_graph_ss_app.jpg" alt="dark graph ss" style="width:200px;"/>
