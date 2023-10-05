@@ -7,14 +7,142 @@ import {
 } from "react-native-paper";
 import { Appbar, useTheme } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { SafeAreaView, View, StyleSheet } from "react-native";
+import { SafeAreaView, View, StyleSheet, Platform, Linking } from "react-native";
 
-export default function Home() {
+// firebase 
+import { FIREBASE_AUTH, FIREBASE_REALTIME_DB } from "../firebase/firebaseConfig";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { set, ref, onValue } from "firebase/database";
+
+// push notification
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+
+// Can use this function below or use Expo's Push Notification Tool from: https://expo.dev/notifications
+async function sendPushNotification(expoPushToken, ppm) {
+  const message = {
+    to: expoPushToken,
+    sound: 'default',
+    title: 'Smoke Detected!',
+    body: `Smoke detected at ${ppm} PPM`,
+    data: { ppm },
+  };
+
+  await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(message),
+  });
+}
+
+async function registerForPushNotificationsAsync() {
+  let token;
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      alert('Failed to get push token for push notification!');
+      return;
+    }
+    token = await Notifications.getExpoPushTokenAsync({
+      projectId: Constants.expoConfig.extra.eas.projectId,
+    });
+    console.log(token);
+  } else {
+    alert('Must use physical device for Push Notifications');
+  }
+
+  if (Platform.OS === 'android') {
+    Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+
+  return token;
+}
+
+// write led state 
+function writeLedState(led) {
+	const userId = FIREBASE_AUTH.currentUser.uid;
+	const ledRef = ref(FIREBASE_REALTIME_DB, `UsersData/${userId}/led`);
+	// write led state to firebase
+	set(ledRef, led);
+}
+
+export default function Home(props) {
   const theme = useTheme();
 	const [ppm, setppm] = React.useState();
 	const threshold = 350;
 	const textColor = !ppm ? theme.colors.onSurface : (ppm < threshold ? theme.colors.onSurface : theme.colors.error);
 	const iconColor = !ppm ? theme.colors.primary : (ppm < threshold ? theme.colors.primary : theme.colors.error);
+
+	// debug led 
+	const [led, setLed] = React.useState(false);
+
+	// notification
+	const [expoPushToken, setExpoPushToken] = React.useState('');
+  const [notification, setNotification] = React.useState(false);
+  const notificationListener = React.useRef();
+  const responseListener = React.useRef();
+
+	React.useEffect(() => {
+		registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      setNotification(notification);
+    });
+
+		responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+    });
+
+		const sendNotification = async (ppm) => {
+			await sendPushNotification(expoPushToken, ppm);
+		}
+
+		signInWithEmailAndPassword(FIREBASE_AUTH, "wokwi@wokwi.com" , "password1234")
+				.then((userCredential) => {
+						const userId = userCredential.user.uid;
+						// read ppm
+						const ppmRef = ref(FIREBASE_REALTIME_DB, `UsersData/${userId}/smokeReadings`);
+						onValue(ppmRef, (snapshot) => {
+								const data = snapshot.val();
+								console.log(data);
+								setppm(data);
+								if (data > threshold) {
+									sendNotification(data);
+								}
+						});
+				})
+				.catch((error) => {
+						console.error(error);
+						setppm(undefined);
+				});
+
+		return () => {
+			Notifications.removeNotificationSubscription(notificationListener.current);
+			Notifications.removeNotificationSubscription(responseListener.current);
+		}
+	}, []);
 
 	return (
 		<SafeAreaView style={[styles.container]}>
@@ -106,20 +234,25 @@ export default function Home() {
 							}}
 						/>
 						<Text variant="titleMedium" style={{ paddingLeft: 10 }}>
-							Lorem ipsum dolor sit amet, consectetur adipiscing
-							elit, sed do eiusmod
+							G H Patel College Of Engineering & Technology
+							Vallabh Vidya Nagar, Anand
 						</Text>
 					</Card.Content>
 				</Card>
-				<Button icon="alert" mode="contained-tonal" onPress={() => {}}>
+				<Button icon="alert" mode="contained-tonal" onPress={() => {
+						Linking.openURL(`tel:${"XXXXXXXXXX"}`);
+				}}>
 					Call Fire Department
 				</Button>
 				<Button
-					icon="lightbulb-on"
-					mode="contained-tonal"
-					onPress={() => {}}
+					icon={led ? "alarm-light-outline" : "alarm-light"}
+					mode={led ? "outlined" : "contained-tonal"}
+					onPress={() => {
+						setLed(!led);
+						writeLedState(!led);
+					}}
 				>
-					Debug Inbuilt LED
+					{"Debug Inbuilt LED" + (led ? " : Off" : ": On")}
 				</Button>
 			</View>
 		</SafeAreaView>
