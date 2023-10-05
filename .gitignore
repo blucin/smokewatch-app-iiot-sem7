@@ -39,3 +39,5 @@ android/
 
 # vscode 
 .vscode
+
+.env
