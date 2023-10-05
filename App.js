@@ -63,10 +63,13 @@ export default function Main() {
 		},
 	]);
 
+	const [email, setEmail] = React.useState("email@email.com");
+	const [password, setPassword] = React.useState("");
+
 	const renderScene = BottomNavigation.SceneMap({
-		home: Home,
-		graph: Graph,
-		settings: Settings,
+		home: () => <Home email={email} password={password} setEmail={setEmail} setPassword={setPassword}/>,
+		graph: () => <Graph email={email} password={password} setEmail={setEmail} setPassword={setPassword}/>,
+		settings: () => <Settings email={email} password={password} setEmail={setEmail} setPassword={setPassword}/>,
 	});
 
 	return (
@@ -77,6 +80,10 @@ export default function Main() {
 					navigationState={{ index, routes }}
 					onIndexChange={setIndex}
 					renderScene={renderScene}
+					email={email}
+					setEmail={setEmail}
+					password={password}
+					setPassword={setPassword}
 				/>
 			</NavigationContainer>
 		</PaperProvider>

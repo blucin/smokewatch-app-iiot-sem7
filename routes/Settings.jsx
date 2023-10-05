@@ -2,11 +2,17 @@ import React from "react";
 import { SafeAreaView, View, StyleSheet } from "react-native";
 import { Appbar, useTheme, Text } from "react-native-paper";
 import { TextInput, FAB } from "react-native-paper";
+import PropTypes from 'prop-types';
 
-export default function Settings() {
+export default function Settings(props) {
 	const theme = useTheme();
-	const [email, setEmail] = React.useState("test@gmail.com");
-	const [password, setPassword] = React.useState("password123");
+	const [email, setEmail] = React.useState(props.email);
+	const [password, setPassword] = React.useState(props.password);
+
+	const handlePress = () => {
+		props.setEmail(email);
+		props.setPassword(password);
+	};
 
 	return (
 		<SafeAreaView style={[styles.container]}>
@@ -36,11 +42,16 @@ export default function Settings() {
 			<FAB
 				icon="content-save-outline"
 				style={styles.fab}
-				onPress={() => {}}
+				onPress={handlePress}
 			/>
 		</SafeAreaView>
 	);
 }
+
+Settings.prototype = {
+	email: PropTypes.string,
+	password: PropTypes.string,
+};
 
 const styles = StyleSheet.create({
 	container: {
