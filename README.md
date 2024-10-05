@@ -1,5 +1,5 @@
 <h2>
-	SmokeWatch App: Real-time Smoke Detection (SEM5-EIoT-Project)
+	SmokeWatch App: Real-time Smoke Detection (SEM7-IIoT-Project)
 </h2>
 
 Frontend for the SmokeWatch Project. This project is a part of the SEM5-EIoT-Project. The project is a real-time smoke detection system that uses:
