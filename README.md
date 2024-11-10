@@ -2,7 +2,7 @@
 	SmokeWatch App: Real-time Smoke Detection (SEM7-IIoT-Project)
 </h2>
 
-Frontend for the SmokeWatch Project. This project is a part of the SEM5-EIoT-Project. The project is a real-time smoke detection system that uses:
+Frontend for the SmokeWatch Project. This project is a part of the SEM5-EIoT-Project and SEM7-IIoT-Project. The project is a real-time smoke detection system that uses:
 - NodeMCU V3 ESP8266
 - MQ2 Smoke Sensor
 - GPS Module
